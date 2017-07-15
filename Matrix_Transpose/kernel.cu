@@ -9,8 +9,11 @@ __global__ void transpose(int *arr,int *out)
 	int idy = blockDim.x*threadIdx.x + blockIdx.x;
 	out[idy] = arr[idx];
 }
+//Transpose kernel using shared memory and optimized read and write pattern
+//Performance much higher compared to the first transpose kernel
 __global__ void transposeShared(int* arr, int *out)
 {
+	//Size of share[][] is 32X34 instead if 32X32 so as to avoid bank conflicts
 	__shared__ int share[32][32+2];
 	int idx = blockDim.x*blockIdx.x+threadIdx.x;
 	int idy = blockDim.y*blockIdx.y + threadIdx.y;
@@ -24,10 +27,11 @@ __global__ void transposeShared(int* arr, int *out)
 	int ic = in % blockDim.y;
 	int idyn = blockDim.x*blockIdx.x + ir;
 	int idxn = blockDim.y*blockIdx.y + ic;
-	int tindex = idyn*blockDim.x*gridDim.x + idxn;
-
+	//Writes to global memory are coalesced
+	int tindex = idyn*blockDim.x*gridDim.x d+ idxn;
 	out[tindex] = share[ic][ir];
 }
+//Kernel to generate the matrix 
 __global__ void generate(int *arr)
 {
 	int idx = blockDim.x*blockIdx.x+threadIdx.x;
