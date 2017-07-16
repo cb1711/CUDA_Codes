@@ -1,5 +1,5 @@
 # CUDA_Codes
-The repository contains codes for assignments of Intro To Parallel programming course on Udacity
+The repository contains codes for assignments of Intro To Parallel programming course on Udacity and some other codes for CUDA enabled GPUs
 
 Codes work only on computers with NVIDIA GPUs 
 
