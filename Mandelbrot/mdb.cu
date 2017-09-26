@@ -42,10 +42,8 @@ void gpuFuncCaller()
 void plotter()
 {
 	gpuFuncCaller();
-
 	glClear(GL_COLOR_BUFFER_BIT);
 	glBegin(GL_POINTS);
-
 	for(int i=0;i<1024;i++)
 	{
 		for(int j=0;j<1024;j++)
@@ -54,7 +52,6 @@ void plotter()
 			glVertex2s(j-512,i-512);
 		}
 	}
-
 	glEnd();
 	glColor3f(1.0,1.0,1.0);
 	glBegin(GL_LINES);
@@ -117,14 +114,14 @@ int main(int argc,char** argv)
 	top=1.0;
 	bottom=-1.0;
 	cudaDeviceSynchronize();
-    glutInit(&argc,argv);
-    glutInitDisplayMode(GLUT_SINGLE| GLUT_RGB);
-    glutInitWindowSize(500,500);
-    glutInitWindowPosition(100,100);
-    glutCreateWindow("Window");
-    init();
-    glutMouseFunc(mouse);
-    glutDisplayFunc(plotter);
-    glutMainLoop();
-    return 0;
+    	glutInit(&argc,argv);
+    	glutInitDisplayMode(GLUT_SINGLE| GLUT_RGB);
+    	glutInitWindowSize(500,500);
+    	glutInitWindowPosition(100,100);
+    	glutCreateWindow("Window");
+    	init();
+    	glutMouseFunc(mouse);
+    	glutDisplayFunc(plotter);
+	glutMainLoop();
+    	return 0;
 }
