@@ -8,13 +8,13 @@
 //This is due to the loss of precision on subtracting floats
 __device__ float gmax(float a, float b)
 {
-	return (a > b)*a + (b > a)*b;
+	return (a > b) * a + (b > a) * b;
 }
-__global__ void BitonicMergesort(float *d_out,const float *d_in){
+__global__ void BitonicMergesort(float *d_out, const float *d_in){
 	extern __shared__ float smem[];
 	int tid = threadIdx.x;
 	smem[tid] = d_in[tid];
-	smem[tid+32] = d_in[tid+32];
+	smem[tid + 32] = d_in[tid + 32];
 	__syncthreads();
 	for (int stage = 1; stage <= 32; stage*=2)
 	{
@@ -22,7 +22,7 @@ __global__ void BitonicMergesort(float *d_out,const float *d_in){
 		for (int substage = stage; substage >= 1; substage/=2)
 		{
 			int dir = (tid/stage) % 2;
-			int ind = tid + (tid / substage)*substage;
+			int ind = tid + (tid / substage) * substage;
 			//Works better compared to comparing and then swapping as it has less branch divergence
 			float mx = gmax(smem[ind], smem[ind + substage]);
 			float mn = smem[ind] + smem[ind + substage] - mx;
@@ -58,14 +58,14 @@ __global__ void BitonicMergesort(float *d_out,const float *d_in){
 }
 int main()
 {
-	const int ARRAY_SIZ = 64;
-	const int ARRAY_BYTES = ARRAY_SIZ * sizeof(float);
+	const int ARRAY_SIZE = 64;
+	const int ARRAY_BYTES = ARRAY_SIZE * sizeof(float);
 
 	// generate the input array on the host
-	float h_in[ARRAY_SIZ];
-	float h_sorted[ARRAY_SIZ];
-	float h_out[ARRAY_SIZ];
-	for (int i = 0; i < ARRAY_SIZ; i++) {
+	float h_in[ARRAY_SIZE];
+	float h_sorted[ARRAY_SIZE];
+	float h_out[ARRAY_SIZE];
+	for (int i = 0; i < ARRAY_SIZE; i++) {
 		// generate random float in [0, 1]
 		h_in[i] = (float)rand() / (float)RAND_MAX;
 	}
@@ -82,14 +82,14 @@ int main()
 	// launch the kernel
 	GpuTimer timer;
 	timer.Start();
-	BitonicMergesort << <1, ARRAY_SIZ/2, ARRAY_SIZ * sizeof(float) >> >(d_out, d_in);
+	BitonicMergesort << <1, ARRAY_SIZE/2, ARRAY_SIZE * sizeof(float) >> >(d_out, d_in);
 	timer.Stop();
 	cudaMemcpy(h_out, d_out, ARRAY_BYTES, cudaMemcpyDeviceToHost);
-	for (int i = 0; i < ARRAY_SIZ; i++)
+	for (int i = 0; i < ARRAY_SIZE; i++)
 		cout << h_out[i] << " ";
 	cudaError_t err = cudaGetLastError();
 	cout << cudaGetErrorString(err) << endl;
-	cout << "Time taken=" << timer.Elapsed() << endl;
+	cout << "Time taken = " << timer.Elapsed() << endl;
 	return 0;
 
 }
